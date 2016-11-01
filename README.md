@@ -9,12 +9,15 @@ By implementing required queries and possible natural language queries, the data
 To demonstrate the work, a web GUI will be designed and implemented.
 
 # Architecture
+
+```
 .
 ├── data
-│   └── wikidata-latest-all.json  	# omited due to large in size.
-├── web								# GUI display
-├── util							# possible util functions
-└── README.md
+│   └── wikidata-latest-all.json  	# omited due to large in size
+├── web								# GUI display 
+├── util							# possible util functions 
+└── README.md 						
+```
 
 # Note
 
