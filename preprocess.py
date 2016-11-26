@@ -15,13 +15,7 @@ def init_mysql():
     cur.execute("DELETE FROM quantity")
     cur.execute("DELETE FROM claim")
     # db.commit()
-    # cur.execute('''INSERT IGNORE INTO claim VALUES ("Q1$D6ECBA3F-C018-4C0C-A7FA-62B858782609", "statement", "value", "P1051", "1", "external-id", "string", "517", "41");''')
-    # cur.execute('''INSERT IGNORE INTO claim VALUES ("Q1$D6ECBA3F-C018-4C0C-A7FA-62B858782609", "statement", "value", "P1051", "1", "external-id", "string", "517", "41");''')
-    # cur.execute("INSERT INTO Datavalue VALUES (NULL, %s), (NULL, %s)", [("12"), ("12")])
-    # sql = "INSERT INTO Datavalue VALUES {0}".format("%s")
-    # cur.execute(sql, [("NULL", "12")])
-    # cur.execute("SELECT * FROM entity")
-    # print cur.fetchall()
+    cur.execute("INSERT IGNORE INTO item VALUES ('Q1'), ('Q2')")
 
 init_mysql()
 err_file = "err.log"
@@ -31,7 +25,14 @@ err_f = open(err_file, "w")
 def insert_many(table, data_list, execute=True):
     if data_list == []:
         return
+    data_list = data_list[:50]
     tpl = "%s," * len(data_list)
+    print len(data_list[0]), data_list[0]
+    if len(data_list[0]) == 1:
+    # if isinstance(data_list[0], tuple):
+        tpl = "(%s)," * len(data_list)
+        for i, d in enumerate(data_list):
+            data_list[i] = d[0]
     tpl = tpl[:-1]
     sql = "INSERT IGNORE INTO %s VALUES " % table
     sql += "{0}".format(tpl)
@@ -42,9 +43,13 @@ def insert_many(table, data_list, execute=True):
             return sql % tuple(data_list)
     except:
         print table
+        print len(data_list)
         print data_list
+        print sql
+        print sql % tuple(data_list)
         err_f.write(table + "\n")
-        err_f.write("\n".join(data_list) + "\n\n")
+        raise
+        # err_f.write("\n".join(data_list) + "\n\n")
 
 def get_datavalue(valuetype, value):
     shortvalue = ""
@@ -97,12 +102,13 @@ def get_datavalue(valuetype, value):
     return shortvalue, completevalue, valuetype
 
 def commit_all(data_dict):
-    for table, data_list in data_dict:
+    for table, data_list in data_dict.items():
+        print table
         insert_many(table, data_list, execute=True)
 
 
 table_list = ["alias", "badge", "claim", "datavalue", "description", "entity", \
-    "globecoordinate", "item", "label", "monolingaltext", "property", "qualifier", \
+    "globecoordinate", "item", "label", "monolingualtext", "property", "qualifier", \
     "quantity", "reference", "referenceitem", "sitelink", "string", "time", "wikientityid"]
 data_dict = {}
 for table in table_list:
@@ -119,7 +125,7 @@ def load_data(fname):
 
     for line in f.xreadlines():
         line_cnt += 1
-        print line_cnt
+        # print line_cnt
         sys.stdout.flush()
         if line_cnt % 1000 == 0:
             commit_all(data_dict)
@@ -238,7 +244,7 @@ def load_data(fname):
             data_dict["claim"] += claim_list
             data_dict["qualifier"] += qualifier_list
             data_dict["reference"] += ref_list
-            data_dict["referneceitem"] += ref_item_list
+            data_dict["referenceitem"] += ref_item_list
 
         except:
             # for i in label_list:

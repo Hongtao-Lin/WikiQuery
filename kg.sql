@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS Qualifier ( -- Shall we join the claim/qualifiers?
 	FOREIGN KEY (did) REFERENCES Datavalue (did)
 );
 
-CREATE TABLE IF NOT EXISTS ReferneceItem (
+CREATE TABLE IF NOT EXISTS ReferenceItem (
 	rid				char(40)	PRIMARY KEY,
 	snaktype		text		not null,
 	property		varchar(20)		not null,
@@ -169,6 +169,6 @@ CREATE TABLE IF NOT EXISTS Reference ( -- Shall we reserve it?
 	rid 			char(40), -- For hash!
 	cid				varchar(128),
 	FOREIGN KEY (cid) REFERENCES Claim (cid), 
-	FOREIGN KEY (rid) REFERENCES ReferneceItem (rid)
+	FOREIGN KEY (rid) REFERENCES ReferenceItem (rid)
 );
 
