@@ -23,6 +23,31 @@ CREATE TABLE IF NOT EXISTS Property (
 	FOREIGN KEY (eid) REFERENCES entity (eid)
 );
 
+-- Fingerprint
+DROP TABLE IF EXISTS Label;
+CREATE TABLE IF NOT EXISTS Label (
+	eid				varchar(20),
+	language		text,
+	value 			text,
+	FOREIGN KEY (eid) REFERENCES Entity (eid)
+);
+
+DROP TABLE IF EXISTS Description;
+CREATE TABLE IF NOT EXISTS Description (
+	eid				varchar(20),
+	language		text,
+	value 			text,
+	FOREIGN KEY (eid) REFERENCES Entity (eid)
+);
+
+DROP TABLE IF EXISTS Alias;
+CREATE TABLE IF NOT EXISTS Alias (
+	eid				varchar(20),
+	language		text,
+	value 			text,
+	FOREIGN KEY (eid) REFERENCES Entity (eid)
+);
+
 -- Claim
 DROP TABLE IF EXISTS Claim;
 CREATE TABLE IF NOT EXISTS Claim (
@@ -33,11 +58,12 @@ CREATE TABLE IF NOT EXISTS Claim (
 	snaktype		text				not null,
 	-- For snak
 	property		varchar(20)			not null,
+	pvalue 			varchar(128),
 	rank			smallint, -- Use 0,1,2 -> preferred, normal, deprecated
 	datatype		text,
 	valuetype		text,
 	value 			text, -- a representative value for faster access
-	-- did 			int,
+	did 			int,
 	FOREIGN KEY (eid) REFERENCES Entity (eid),
 	FOREIGN KEY (property) REFERENCES Property (eid)
 	-- FOREIGN KEY (did) REFERENCES Datavalue (did)

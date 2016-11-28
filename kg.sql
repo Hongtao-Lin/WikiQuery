@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS Claim (
 	snaktype		text				not null,
 	-- For snak
 	property		varchar(20)			not null,
+	pvalue			varchar(128),
 	rank			smallint, -- Use 0,1,2 -> preferred, normal, deprecated
 	datatype		text,
 	valuetype		text,

@@ -1,35 +1,37 @@
 import json
-import cPickle, os, sys
+import cPickle, os, sys, time
 import MySQLdb
 
 def init_mysql():
     global cur, db
     # First extend the max_packet size.
-    db = MySQLdb.connect(host="localhost", user="htl11", passwd="1234", db="Wikidata",\
+    db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db="wikidata_simplified",\
         charset="utf8")
     cur = db.cursor()
     cur.execute("SET GLOBAL net_buffer_length = 1000000;")
     cur.execute("SET GLOBAL max_allowed_packet = 1000000000;")
     db.commit()
     # The command is on for next connection.
-    db = MySQLdb.connect(host="localhost", user="htl11", passwd="1234", db="Wikidata",\
+    db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db="wikidata_simplified",\
         charset="utf8")
     cur = db.cursor()
     cur.execute("SET foreign_key_checks = 0")
+    # cur.execute("INSERT INTO item VALUES ('P1');")
+    # db.commit()
 
-def get_valid_pids(fname):
-    pid_list = []
+def get_valid_properties(fname):
+    prop_dict = {}
     f = open(fname)
     for line in f.readlines():
-        line = line.decode("utf8").strip().split()
+        line = line.decode("utf8").strip().split("\t")
         pid = line[0]
-        pid_list.append(pid)
+        prop_dict[pid] = line[-1]
     f.close()
-    return pid_list
+    return prop_dict
 
 # INIT
 init_mysql()
-pid_list = get_valid_pids("./properties.txt")
+prop_dict = get_valid_properties("./properties.txt")
 tables = ["alias", "badge", "claim", "datavalue", "description", "entity", \
     "globecoordinate", "item", "label", "monolingualtext", "property", "qualifier", \
     "quantity", "reference", "referenceitem", "sitelink", "string", "time", "wikientityid"]
@@ -42,17 +44,18 @@ for table in tables:
 ignore_datavalue = True
 filter_pid = True
 # Acutal table used: entity, item, property, claim
-ignored_tables = ["alias", "badge", "description", "label",  "qualifier", "reference",\
+ignored_tables = ["badge", "qualifier", "reference",\
     "referenceitem", "sitelink"]
 datavalue_tables = ["datavalue", "globecoordinate","monolingualtext", "quantity",\
     "string", "time", "wikientityid"]
 if ignore_datavalue:
     ignored_tables += datavalue_tables
-
-cur.execute("SELECT did FROM Datavalue ORDER BY did DESC LIMIT 1")
-# Data id for increment in datavalue.
-did = cur.fetchone()
-did = str(int(did[0]) if did is not None else -1)
+    did = '-1'
+else:
+    cur.execute("SELECT did FROM Datavalue ORDER BY did DESC LIMIT 1")
+    # Data id for increment in datavalue.
+    did = cur.fetchone()
+    did = str(int(did[0]) if did is not None else -1)
 
 def insert_many(table, data_list, max_num=-1, execute=True):
     """For efficiency.
@@ -74,25 +77,21 @@ def insert_many(table, data_list, max_num=-1, execute=True):
     if max_num == -1:
         max_num = len(data_list)
     data_list = data_list[:max_num]
-    tpl = "%s," * len(data_list)
-    # print len(data_list[0]), data_list[0]
-    if len(data_list[0]) == 1:
-    # if isinstance(data_list[0], tuple):
-        tpl = "(%s)," * len(data_list)
-        for i, d in enumerate(data_list):
-            data_list[i] = d[0]
+
+    tpl = "%s," * len(data_list[0])
     tpl = tpl[:-1]
     sql = "INSERT IGNORE INTO %s VALUES " % table
-    sql += "{0}".format(tpl)
+    sql += "({0})".format(tpl)
     try:
         if execute:
-            return cur.execute(sql, data_list)
+            return cur.executemany(sql, data_list)
         else:
             return sql % tuple(data_list)
     except:
         print table
         print len(data_list)
-        print sql % tuple(data_list)
+        print sql
+        # print sql % tuple(data_list)
         raise
 
 def commit_all(data_dict):
@@ -193,6 +192,9 @@ def load_data(fname):
         eid, etype = entity["id"], entity["type"]
         en_desc, en_label = "", ""
 
+        if etype == "property" and eid not in prop_dict:
+            continue
+
         if etype == "item":
             data_dict["item"].append((eid, ))
         else:
@@ -201,7 +203,10 @@ def load_data(fname):
         alias_list = []
         for aliases in entity["aliases"].values():
             for alias in aliases:
-                alias_list.append((eid, alias["language"], alias["value"]))
+                lang, val = alias["language"], alias["value"]
+                if lang not in ["en", "zh-hans"]:
+                    continue
+                alias_list.append((eid, lang, val))
         data_dict["alias"] += alias_list
   
 
@@ -209,6 +214,8 @@ def load_data(fname):
         for label in entity["labels"].values():
             lang, val = label["language"], label["value"]
             label_list.append((eid, lang, val))
+            if lang not in ["en", "zh-hans"]:
+                continue
             if lang == "en":
                 en_label = val
         data_dict["label"] += label_list
@@ -216,6 +223,8 @@ def load_data(fname):
         desc_list = []
         for desc in entity["descriptions"].values():
             lang, val = desc["language"], desc["value"]
+            if lang not in ["en", "zh-hans"]:
+                continue
             desc_list.append((eid, lang, val))
             if lang == "en":
                 en_desc = val
@@ -247,15 +256,15 @@ def load_data(fname):
                 mainsnak = claim["mainsnak"]
                 snaktype, pid, datatype = mainsnak["snaktype"], mainsnak["property"], \
                     mainsnak["datatype"]
-                if filter_pid and (pid not in pid_list):
+                if filter_pid and (pid not in prop_dict):
                     continue
                 did = str(int(did) + 1)
                 shortvalue, valuetype = "", ""
                 if "datavalue" in mainsnak:
                     shortvalue, valuetype = get_and_store_snak_datavalue(mainsnak, \
                         datavalue_list)
-                claim_list.append((cid, eid, en_label, _type, snaktype, pid, rank, datatype, \
-                    valuetype, shortvalue, did))
+                claim_list.append((cid, eid, en_label, _type, snaktype, pid, prop_dict[pid],\
+                    rank, datatype, valuetype, shortvalue, did))
                 # if etype == "item":
                 #     print eid, claim_list[-1]
                 if "qualifiers" in claim:
@@ -268,7 +277,7 @@ def load_data(fname):
                             # print qua
                             qid, qsnaktype, qpid, qdatatype = qua["hash"], \
                                 qua["snaktype"], qua["property"], qua["datatype"]
-                            if filter_pid and (qpid not in pid_list):
+                            if filter_pid and (qpid not in prop_dict):
                                 continue
                             did = str(int(did) + 1)
                             qrank = qualifier_order[qpid]
@@ -292,7 +301,7 @@ def load_data(fname):
                             for snak in snaks:
                                 rsnaktype, rpid, rdatatype = snak["snaktype"], snak["property"],\
                                     snak["datatype"]
-                                if filter_pid and (rpid not in pid_list):
+                                if filter_pid and (rpid not in prop_dict):
                                     continue
                                 did = str(int(did) + 1)
                                 rrank = ref_order[rpid]
@@ -310,11 +319,13 @@ def load_data(fname):
         data_dict["reference"] += ref_list
         data_dict["referenceitem"] += ref_item_list
 
-        if line_cnt % 1000 == 0:
-            print line_cnt
+        if line_cnt % 10000 == 0:
+            start = time.time()
             sys.stdout.flush()
             commit_all(data_dict)
-            # break
+            print line_cnt, time.time() - start
+            # if line_cnt == 10000:
+            #     break
 
     print line_cnt
     f.close()
@@ -337,8 +348,10 @@ def get_all_properties(fname, oname):
     o.close()
 
 def main():
+    start = time.time()
     # get_all_properties("C:/Users/t-honlin/Desktop/properties.txt", "./properties.txt")
     load_data("C:/Users/t-honlin/Desktop/wikidata.json")
+    print time.time() - start
     pass
 
 if __name__ == '__main__':

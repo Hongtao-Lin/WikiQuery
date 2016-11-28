@@ -1,1 +1,5 @@
 data/wikidata-latest-all.json
+web/node_modules/
+env/
+flaskapp/
+*.pyc

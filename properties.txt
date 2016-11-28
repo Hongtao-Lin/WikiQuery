@@ -1,18 +1,15 @@
 P277	programming language
 P1038	relative
-P711	strunz 8th edition (series id, updated)
 P1366	replaced by
 P2358	roman praenomen
 P1416	affiliation
 P1050	medical condition
 P296	station code
 P1132	number of participants
-P712	nickel-strunz 9th edition (updated 2009)
 P1260	cultural heritage database in sweden
 P1101	floors above ground
 P1148	neutron number
 P749	parent organization
-P713	nickel-strunz 10th (pending) edition
 P1086	atomic number
 P479	input device
 P1801	commemorative plaque image
@@ -87,7 +84,6 @@ P466	occupant
 P1181	numeric value
 P437	distribution
 P291	place of publication
-P357	(obsolete) title (use p1476, "title")
 P1313	office held by head of government
 P591	ec number
 P3096	kml file
@@ -142,7 +138,6 @@ P84	architect
 P135	movement
 P81	connecting line
 P840	narrative location
-P1472	commons creator page
 P2049	width
 P9	sister
 P400	platform
@@ -215,13 +210,11 @@ P607	conflict
 P421	located in time zone
 P94	coat of arms image
 P627	iucn-id
-P1421	grin url
 P141	iucn conservation status
 P937	work location
 P971	category combines topics
 P22	father
 P196	minor planet group
-P935	commons gallery
 P159	headquarters location
 P47	shares border with
 P264	record label
@@ -237,15 +230,12 @@ P1344	participant of
 P161	cast member
 P682	biological process
 P680	molecular function
-P973	described at url
 P2888	exact match
 P175	performer
 P57	director
 P1082	population
 P217	inventory number
-P688	encodes
 P360	is a list of
-P702	encoded by
 P195	collection
 P170	creator
 P433	issue
@@ -270,14 +260,9 @@ P2044	elevation above sea level
 P69	educated at
 P1412	languages spoken, written or signed
 P276	location
-P910	topic's main category
-P2548	strand orientation
 P571	inception
-P645	genomic end
-P644	genomic start
 P301	category's main topic
 P20	place of death
-P856	official website
 P281	postal code
 P1433	published in
 P495	country of origin
@@ -286,13 +271,10 @@ P1476	title
 P577	publication date
 P364	original language of work
 P1435	heritage status
-P1448	official name
 P703	found in taxon
 P279	subclass of
 P19	place of birth
 P570	date of death
-P18	image
-P373	commons category
 P27	country of citizenship
 P106	occupation
 P171	parent taxon
@@ -305,3 +287,4 @@ P21	sex or gender
 P131	located in the administrative territorial entity
 P17	country
 P31	instance of
+P747	edition(s)
