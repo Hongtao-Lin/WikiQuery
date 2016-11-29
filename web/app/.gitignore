@@ -1,0 +1,10 @@
+env/
+*.pyc
+.idea/
+app/static/js/node_modules/
+app/CRF++-0.58/
+app/crfsuite-0.12/
+app/src/ltp_data/
+app/src/data/*.save
+app/src/*.model
+

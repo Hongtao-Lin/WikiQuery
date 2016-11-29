@@ -1,0 +1,5 @@
+env/
+*.pyc
+.idea/
+app/static/js/node_modules/
+

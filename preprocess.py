@@ -8,8 +8,8 @@ def init_mysql():
     db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db="wikidata_simplified",\
         charset="utf8")
     cur = db.cursor()
-    cur.execute("SET GLOBAL net_buffer_length = 1000000;")
-    cur.execute("SET GLOBAL max_allowed_packet = 1000000000;")
+    cur.execute("SET GLOBAL net_buffer_length = %s", 1000000)
+    cur.execute("SET GLOBAL max_allowed_packet = 1000000000")
     db.commit()
     # The command is on for next connection.
     db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db="wikidata_simplified",\
@@ -80,7 +80,7 @@ def insert_many(table, data_list, max_num=-1, execute=True):
 
     tpl = "%s," * len(data_list[0])
     tpl = tpl[:-1]
-    sql = "INSERT IGNORE INTO %s VALUES " % table
+    sql = "INSERT INTO %s VALUES " % table
     sql += "({0})".format(tpl)
     try:
         if execute:
@@ -181,14 +181,16 @@ def load_data(fname, skip=0):
     """
     global did
     f = open(fname, "r")
-    
-    line_cnt = 0
+    print "in"
+    line_cnt = 0    
     for line in f.xreadlines():
         line_cnt += 1
         line = line.strip()
         if line == "]" or line == "[":
             continue
         if line_cnt <= skip:
+            if line_cnt % 10000 == 0:
+                print "Skipped", line_cnt
             continue
         entity = json.loads(line[:-1])
         eid, etype = entity["id"], entity["type"]
@@ -326,8 +328,6 @@ def load_data(fname, skip=0):
             sys.stdout.flush()
             commit_all(data_dict)
             print line_cnt, time.time() - start
-            # if line_cnt == 10000:
-            #     break
 
     print line_cnt
     f.close()
@@ -352,7 +352,7 @@ def get_all_properties(fname, oname):
 def main():
     start = time.time()
     # get_all_properties("C:/Users/t-honlin/Desktop/properties.txt", "./properties.txt")
-    load_data("C:/Users/t-honlin/Desktop/wikidata.json", skip=0)
+    load_data("C:/Users/t-honlin/Desktop/wikidata.json", skip=6100000)
     print time.time() - start
     pass
 
