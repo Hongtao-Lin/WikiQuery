@@ -53,12 +53,12 @@ DROP TABLE IF EXISTS Claim;
 CREATE TABLE IF NOT EXISTS Claim (
 	cid				varchar(128) 		PRIMARY KEY,	
 	eid				varchar(20)			not null,
-	evalue			varchar(128),
+	evalue			text,
 	type			text 				not null, -- statement or not
 	snaktype		text				not null,
 	-- For snak
 	property		varchar(20)			not null,
-	pvalue 			varchar(128),
+	pvalue 			text,
 	rank			smallint, -- Use 0,1,2 -> preferred, normal, deprecated
 	datatype		text,
 	valuetype		text,

@@ -111,3 +111,4 @@ wikidata can be retrieved [here](http://adapt.seiee.sjtu.edu.cn/~frank/wikidata-
 ```
 
 Currently at 3628000
+Currently at 420000

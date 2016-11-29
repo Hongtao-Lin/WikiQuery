@@ -173,7 +173,7 @@ def get_and_store_snak_datavalue(snak, datavalue_list):
     datavalue_list.append((did, valuetype))
     return shortvalue, valuetype
 
-def load_data(fname):
+def load_data(fname, skip=0):
     """Load the whole data from json.
     First parse each line of json, 
     Then collect tuples of data into *data_dict*
@@ -187,6 +187,8 @@ def load_data(fname):
         line_cnt += 1
         line = line.strip()
         if line == "]" or line == "[":
+            continue
+        if line_cnt <= skip:
             continue
         entity = json.loads(line[:-1])
         eid, etype = entity["id"], entity["type"]
@@ -350,7 +352,7 @@ def get_all_properties(fname, oname):
 def main():
     start = time.time()
     # get_all_properties("C:/Users/t-honlin/Desktop/properties.txt", "./properties.txt")
-    load_data("C:/Users/t-honlin/Desktop/wikidata.json")
+    load_data("C:/Users/t-honlin/Desktop/wikidata.json", skip=0)
     print time.time() - start
     pass
 
