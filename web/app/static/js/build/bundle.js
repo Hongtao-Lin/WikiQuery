@@ -53,9 +53,8 @@
 	$(document).ready(function () {
 		url = location.href.split("/");
 		url = url[url.length-1]
-		console.log(url);
-		console.log(location.href);
 		if (url == "nlq") {
+
 			ReactDOM.render(React.createElement(NLQBoard, null),document.getElementById("nlq-container"));
 		} else {
 			ReactDOM.render(React.createElement(MessageBoard, null),document.getElementById("message-board-container"));
@@ -21877,6 +21876,19 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(33);
 
+	var parser = new Parser('en');
+
+	function handleQuestion(question) {
+		// parse the question
+		parser.parseQuestion(question)
+		.then(function(parsed) {
+			handleParsed(parsed);
+		}, function() {
+			// the question could not be parsed
+			showError(i18n.t('unparsable'));
+		} );
+	}
+
 	var NLQBoard = React.createClass({displayName: "NLQBoard",
 		getInitialState : function(){
 			return {
@@ -21893,16 +21905,23 @@
 		e.preventDefault();
 	  },
 		submitMessage : function (val) {
-			$.ajax({
-				type:'post',
-				url:'/nlq_ask',
-				data:{query:val}
-			}).done(function (res) {
-				this.setState({
-					query: this.state.query,
-					answer: res.data 
-				});
-			}.bind(this));
+			parser.parseQuestion(val)
+			.then(function(parsed) {
+				console.log(parsed);
+				console.log(JSON.stringify(parsed));
+				$.ajax({
+					type:'post',
+					url:'/nlq_ask',
+					data:{args:JSON.stringify(parsed)}
+				}).done(function (res) {
+					this.setState({
+						query: this.state.query,
+						answer: res.tree 
+					});
+				}.bind(this));
+			}, function() {
+				console.log("Error!")
+			});
 		},
 		render : function(){
 			return(

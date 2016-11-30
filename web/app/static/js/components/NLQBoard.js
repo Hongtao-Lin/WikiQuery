@@ -1,6 +1,19 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 
+var parser = new Parser('en');
+
+function handleQuestion(question) {
+	// parse the question
+	parser.parseQuestion(question)
+	.then(function(parsed) {
+		handleParsed(parsed);
+	}, function() {
+		// the question could not be parsed
+		showError(i18n.t('unparsable'));
+	} );
+}
+
 var NLQBoard = React.createClass({
 	getInitialState : function(){
 		return {
@@ -17,16 +30,23 @@ var NLQBoard = React.createClass({
 	e.preventDefault();
   },
 	submitMessage : function (val) {
-		$.ajax({
-			type:'post',
-			url:'/nlq_ask',
-			data:{query:val}
-		}).done(function (res) {
-			this.setState({
-				query: this.state.query,
-				answer: res.data 
-			});
-		}.bind(this));
+		parser.parseQuestion(val)
+		.then(function(parsed) {
+			console.log(parsed);
+			console.log(JSON.stringify(parsed));
+			$.ajax({
+				type:'post',
+				url:'/nlq_ask',
+				data:{args:JSON.stringify(parsed)}
+			}).done(function (res) {
+				this.setState({
+					query: this.state.query,
+					answer: res.tree 
+				});
+			}.bind(this));
+		}, function() {
+			console.log("Error!")
+		});
 	},
 	render : function(){
 		return(

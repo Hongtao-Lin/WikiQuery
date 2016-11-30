@@ -7,9 +7,8 @@ var ReactDOM = require("react-dom");
 $(document).ready(function () {
 	url = location.href.split("/");
 	url = url[url.length-1]
-	console.log(url);
-	console.log(location.href);
 	if (url == "nlq") {
+
 		ReactDOM.render(<NLQBoard/>,document.getElementById("nlq-container"));
 	} else {
 		ReactDOM.render(<MessageBoard/>,document.getElementById("message-board-container"));

@@ -4,10 +4,57 @@ from app import app
 from flask import render_template, request, jsonify
 # from models import Message
 from datetime import datetime
+import requests
 # from src.NumberSequenceClassifier import number_clf
 # import src.crf as CRF
 # import src.rule as rule
 import json
+
+# Helper func:
+def load_property(fname):
+    f = open(fname)
+    prop_dict = {}
+    for line in f.xreadlines():
+        pid, pname = line.decode("utf8").split("\t")
+        prop_dict[pname] = pid
+    f.close()
+    return prop_dict
+pfname = "../../properties.txt"
+prop_dict = load_property(pfname)
+
+def find_tree(eid):
+    data = [
+        ["P1", "HAH", "HAHA"]
+    ]
+    return data
+
+def find_relation(eid):
+    data = [
+        ["P1", "HAH", "HAHA"]
+    ]
+    return data
+
+def find_cooccur(eid):
+    data = [
+        ["P1", "HAH", "HAHA"]
+    ]
+    return data
+
+def find_entityid(ename):
+    eid = "Q1"
+    prompt = ""
+    return eid, prompt
+
+def find_description(eid):
+    desc = "desc"
+    prompt = ""
+    return desc, prompt
+
+def find_claim(eid, pid):
+    """Prompt retirm "is_entity" if the corresponding value is entity!"""
+    claim = "claim"
+    prompt = ""
+    return claim, prompt
 
 @app.route("/")
 def index():
@@ -19,7 +66,28 @@ def nlq():
 
 @app.route("/nlq_ask", methods=["POST"])
 def nlq_ask():
-    answer = "Just a test!"
+    args = request.form.get("args")
+    args = json.loads(args)
+    prompt = ""
+    answer = ""
+    item = args.get("item", "")
+    prop = args.get("property", "")
+    if not item:
+        prompt = "Cannot find the entity you mentioned!"
+    elif not prop:  # Identify as find a description 
+        eid, prompt = find_entityid(item)
+        if not prompt:
+            answer, prompt = find_description(answer["eid"]) 
+    else:
+        eid, prompt = find_entityid(item)
+        if not prompt:
+            pid = prop_dict[prop]
+            answer, prompt = find_claim(eid, pid)
+            if 
+
+    answer = "Just a test"
+    if prompt:
+        return jsonify(status='fail',data=prompt)
     return jsonify(status='success',data=answer)
 
 
@@ -62,50 +130,3 @@ def add_dict():
     # status = rule.add_dict(dic)
     status = True
     return jsonify(status=status)
-
-
-def find_tree(eid):
-    data = [
-        ["P1", "HAH", "HAHA"]
-    ]
-    return data
-
-def find_relation(eid):
-    data = [
-        ["P1", "HAH", "HAHA"]
-    ]
-    return data
-
-def find_cooccur(eid):
-    data = [
-        ["P1", "HAH", "HAHA"]
-    ]
-    return data
-    
-# @app.route("/message", methods=["POST"])
-# def save_msg():
-#     form = request.form
-#     author = form.get("author")
-#     content = form.get("content")
-#     msg = Message(author=author, content=content, time=datetime.now())
-#     msg.save()
-#     return jsonify(status='success')
-
-
-# @app.route("/messages")
-# def list_msg():
-#     page = request.args.get("page")
-#     searchValue = request.args.get("searchValue")
-#     if searchValue:
-#         paginator =Message.objects(content__contains=searchValue).order_by('-time').paginate(page=int(page), per_page=5)
-#     else:
-#         paginator =Message.objects.order_by('-time').paginate(page=int(page), per_page=5)
-
-#     pager = {
-#         'page': paginator.page,
-#         'pages': paginator.pages,
-#         'messages': [m.to_json() for m in paginator.items]
-#     }
-#     return jsonify(status="success", pager=pager)
-
-
