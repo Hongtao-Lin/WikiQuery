@@ -1,22 +1,22 @@
 import json
 import cPickle, os, sys, time
-import MySQLdb
+import mysql.connector
 
 def init_mysql(dbname):
     global cur, db
     # First extend the max_packet size.
-    db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db=dbname,\
+    db = mysql.connector.connect(host="localhost", user="root", passwd="Listen", db=dbname,\
         charset="utf8")
     cur = db.cursor()
-    cur.execute("SET GLOBAL net_buffer_length = %s", 1000000)
+    cur.execute("SET GLOBAL net_buffer_length = %s" % 1000000)
     cur.execute("SET GLOBAL max_allowed_packet = 1000000000")
     db.commit()
     # The command is on for next connection.
-    db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db=dbname,\
+    db = mysql.connector.connect(host="localhost", user="root", passwd="Listen", db=dbname,\
         charset="utf8")
-    cur.execute("SET character_set_client  = utf8mb4 ")
-    cur.execute("SET character_set_results = utf8mb4 ")
-    cur.execute("SET collation_connection  = utf8mb4_general_ci  ")
+    # cur.execute("SET character_set_client  = utf8mb4")
+    # cur.execute("SET character_set_results = utf8mb4")
+    # cur.execute("SET collation_connection  = utf8mb4_general_ci")
     cur = db.cursor()
     cur.execute("SET foreign_key_checks = 0")
     # cur.execute("INSERT INTO item VALUES ('P1');")
@@ -38,7 +38,7 @@ init_mysql(dbname)
 prop_dict = get_valid_properties("./properties.txt")
 tables = ["alias", "badge", "claim", "datavalue", "description", "entity", \
     "globecoordinate", "item", "label", "monolingualtext", "property", "qualifier", \
-    "quantity", "reference", "referenceitem", "sitelink", "string", "time", "wikientityid"]
+    "quantity", "reference", "referenceitem", "sitelink", "string", "time", "wikientityid", "cqmapping", "correlation", "preced"]
 data_dict = {}
 for table in tables:
     data_dict[table] = []
@@ -88,7 +88,8 @@ def insert_many(table, data_list, max_num=-1, execute=True):
 
     tpl = "%s," * len(data_list[0])
     tpl = tpl[:-1]
-    sql = "INSERT IGNORE INTO %s VALUES " % table
+    # sql = "INSERT IGNORE INTO %s VALUES " % table.capitalize()
+    sql = "INSERT IGNORE INTO %s VALUES " % table.capitalize()
     sql += "({0})".format(tpl)
     try:
         if execute:
@@ -98,6 +99,7 @@ def insert_many(table, data_list, max_num=-1, execute=True):
     except:
         print table
         print len(data_list)
+        # print data_list
         print sql
         # print sql % tuple(data_list)
         raise
@@ -190,7 +192,9 @@ def load_data(fname, skip=0):
     global did
     f = open(fname, "r")
     print "in"
-    line_cnt = 0    
+    line_cnt = 0
+    start = time.time()
+
     for line in f.xreadlines():
         line_cnt += 1
         line = line.strip()
@@ -261,6 +265,9 @@ def load_data(fname, skip=0):
         qualifier_list = []
         ref_list = []
         ref_item_list = []
+        cqmapping_list = []
+        preced_list = []
+        correlation_list = []
         for claims in entity["claims"].values():
             for claim in claims:
                 cid, _type, rank = claim["id"], claim["type"], claim["rank"]
@@ -275,9 +282,16 @@ def load_data(fname, skip=0):
                 if "datavalue" in mainsnak:
                     shortvalue, valuetype = get_and_store_snak_datavalue(mainsnak, \
                         datavalue_list)
+                    if "wikibase-entityid" == valuetype:
+                        correlation_list.append((eid, shortvalue, cid))
+                        if pid == "P279" or pid == "P31":
+                            preced_list.append((eid,shortvalue))
+
                 if not combine_qua_claim:
                     claim_list.append((cid, eid, en_label, _type, snaktype, pid, prop_dict[pid],\
                         rank, datatype, valuetype, shortvalue, did))
+                else:
+                    claim_list.append((cid, eid, pid, shortvalue))
                 # if etype == "item":
                 #     print eid, claim_list[-1]
                 if "qualifiers" in claim:
@@ -299,8 +313,11 @@ def load_data(fname, skip=0):
                             if "datavalue" in qua:
                                 qshortvalue, qvaluetype = get_and_store_snak_datavalue(qua, \
                                     datavalue_list)
+                                if "wikibase-entityid" == qvaluetype:
+                                    correlation_list.append((eid, qshortvalue, cid));
+
                             if combine_qua_claim:
-                                claim_list.append((eid, pid, shortvalue, qid))
+                                cqmapping_list.append((cid,qid))
                                 qualifier_list.append((qid, qpid, qshortvalue))
                             else:
                                 qualifier_list.append((qid, cid, qsnaktype, qpid, qrank, qdatatype,\
@@ -335,12 +352,16 @@ def load_data(fname, skip=0):
         data_dict["qualifier"] += qualifier_list
         data_dict["reference"] += ref_list
         data_dict["referenceitem"] += ref_item_list
+        data_dict["correlation"] += correlation_list
+        data_dict["preced"] += preced_list
+        data_dict["cqmapping"] += cqmapping_list
 
         if line_cnt % 10000 == 0:
-            start = time.time()
             sys.stdout.flush()
             commit_all(data_dict)
             print line_cnt, time.time() - start
+            start = time.time()
+            
 
     print line_cnt
     f.close()
@@ -365,7 +386,7 @@ def get_all_properties(fname, oname):
 def main():
     start = time.time()
     # get_all_properties("C:/Users/t-honlin/Desktop/properties.txt", "./properties.txt")
-    load_data("C:/Users/t-honlin/Desktop/wikidata.json", skip=0)
+    load_data("/home/larryeye/WikiQuery/wikidata.json", skip=0)
     print time.time() - start
     pass
 
