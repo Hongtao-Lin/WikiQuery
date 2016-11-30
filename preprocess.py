@@ -225,9 +225,9 @@ def load_data(fname, skip=0):
         label_list = []
         for label in entity["labels"].values():
             lang, val = label["language"], label["value"]
-            label_list.append((eid, lang, val))
             if lang not in ["en", "zh-hans"]:
                 continue
+            label_list.append((eid, lang, val))
             if lang == "en":
                 en_label = val
         data_dict["label"] += label_list

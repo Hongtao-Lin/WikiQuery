@@ -9,7 +9,8 @@
   "author": "defshine",
   "license": "ISC",
   "dependencies": {
-    "react": "^0.12.2"
+    "react": "latest",
+    "react-dom": "latest"
   },
   "devDependencies": {
     "jsx-loader": "^0.12.2"

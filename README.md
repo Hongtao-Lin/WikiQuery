@@ -16,15 +16,7 @@ For SQL table construction, run `kg_simplified.sql` in MySQL.
 
 For data import, run `python preprocess.py`. Note about some global config in it.
 
-For web display, we use [nodejs](https://github.com/nodejs/node) for backend logic, [react-native](https://github.com/facebook/react-native) and [material-ui](https://github.com/callemall/material-ui) for front display: 
-```
-npm install material-ui
-npm install react-tap-event-plugin
-npm install --save-dev babel-preset-stage-1
-
-```
-See [here](http://www.material-ui.com/#/get-started/installation) for detailed instruction on installation of material-ui.
-
+For web display, we use [flask](https://github.com/pallets/flask) for backend logic, [react-js](https://github.com/facebook/react) and [materialize](https://github.com/Dogfalo/materialize) for front display: 
 
 ## Architecture
 
@@ -49,3 +41,4 @@ wikidata can be retrieved [here](http://adapt.seiee.sjtu.edu.cn/~frank/wikidata-
 
 Currently at 3628000
 Currently at 420000
+Currently at 2860000

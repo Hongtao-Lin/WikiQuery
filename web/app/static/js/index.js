@@ -1,9 +1,18 @@
 var React = require("react");
 var MessageBoard = require("./components/MessageBoard");
+var NLQBoard = require("./components/NLQBoard");
+var ReactDOM = require("react-dom");
+
 
 $(document).ready(function () {
-
-  // React.render(<App />, document.body);
-	React.render(<MessageBoard/>,document.getElementById("message-board-container"));
-    $('select').material_select();
+	url = location.href.split("/");
+	url = url[url.length-1]
+	console.log(url);
+	console.log(location.href);
+	if (url == "nlq") {
+		ReactDOM.render(<NLQBoard/>,document.getElementById("nlq-container"));
+	} else {
+		ReactDOM.render(<MessageBoard/>,document.getElementById("message-board-container"));
+		
+	}
 });
