@@ -51,20 +51,38 @@ CREATE TABLE IF NOT EXISTS Alias (
 -- Claim
 DROP TABLE IF EXISTS Claim;
 CREATE TABLE IF NOT EXISTS Claim (
-	cid				varchar(128) 		PRIMARY KEY,	
+	-- cid				varchar(128) 		PRIMARY KEY,
 	eid				varchar(20)			not null,
-	evalue			text,
-	type			text 				not null, -- statement or not
-	snaktype		text				not null,
+	-- evalue			text,
+	-- type			text 				not null, -- statement or not
+	-- snaktype		text				not null,
 	-- For snak
 	property		varchar(20)			not null,
-	pvalue 			text,
-	rank			smallint, -- Use 0,1,2 -> preferred, normal, deprecated
-	datatype		text,
-	valuetype		text,
+	-- pvalue 			text,
+	-- rank			smallint, -- Use 0,1,2 -> preferred, normal, deprecated
+	-- datatype		text,
+	-- valuetype		text,
 	value 			text, -- a representative value for faster access
-	did 			int,
+	-- did 			int,
+	qid				char(40),
 	FOREIGN KEY (eid) REFERENCES Entity (eid),
 	FOREIGN KEY (property) REFERENCES Property (eid)
+	-- FOREIGN KEY (did) REFERENCES Datavalue (did)
+);
+
+-- Note that Qualifier do not have `type` field
+DROP TABLE IF EXISTS Qualifier;
+CREATE TABLE IF NOT EXISTS Qualifier ( -- Shall we join the claim/qualifiers?
+	qid 			char(40) 		PRIMARY KEY, -- For hash!
+	-- cid				varchar(128),
+	-- snaktype		text		not null,
+	property		varchar(20)		not null,
+	-- rank			smallint, -- Calculated from q_order
+	-- datatype		text,
+	-- valuetype		text,
+	value 			text, -- a representative value for faster access
+	-- did 			int,
+	FOREIGN KEY (property) REFERENCES Property (eid)
+	-- FOREIGN KEY (cid) REFERENCES Claim (cid),
 	-- FOREIGN KEY (did) REFERENCES Datavalue (did)
 );

@@ -33,11 +33,10 @@ var Message = React.createClass({
           </tr>
         </thead>
         <tbody>
-					{msg.map(function(item, idx){
-						return <MessageBlock data-tag={item[0]} key={item.id} msg={item[idx]} \
-							onclick={this.handleClick.bind(null, item[0])}/>
-					})}
-          
+			{msg.map(function(item, idx){
+				return <MessageBlock data-tag={item[0]} key={item.id} msg={item[idx]} \
+					onclick={this.handleClick.bind(null, item[0])}/>
+			})}
         </tbody>
       </table>
 		)

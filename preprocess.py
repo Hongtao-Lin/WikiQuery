@@ -2,22 +2,25 @@ import json
 import cPickle, os, sys, time
 import MySQLdb
 
-def init_mysql():
+def init_mysql(dbname):
     global cur, db
     # First extend the max_packet size.
-    db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db="wikidata_simplified",\
+    db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db=dbname,\
         charset="utf8")
     cur = db.cursor()
     cur.execute("SET GLOBAL net_buffer_length = %s", 1000000)
     cur.execute("SET GLOBAL max_allowed_packet = 1000000000")
     db.commit()
     # The command is on for next connection.
-    db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db="wikidata_simplified",\
+    db = MySQLdb.connect(host="localhost", user="root", passwd="1234", db=dbname,\
         charset="utf8")
+    cur.execute("SET character_set_client  = utf8mb4 ")
+    cur.execute("SET character_set_results = utf8mb4 ")
+    cur.execute("SET collation_connection  = utf8mb4_general_ci  ")
     cur = db.cursor()
     cur.execute("SET foreign_key_checks = 0")
     # cur.execute("INSERT INTO item VALUES ('P1');")
-    # db.commit()
+    db.commit()
 
 def get_valid_properties(fname):
     prop_dict = {}
@@ -30,7 +33,8 @@ def get_valid_properties(fname):
     return prop_dict
 
 # INIT
-init_mysql()
+dbname = "wikidata_simplified2"
+init_mysql(dbname)
 prop_dict = get_valid_properties("./properties.txt")
 tables = ["alias", "badge", "claim", "datavalue", "description", "entity", \
     "globecoordinate", "item", "label", "monolingualtext", "property", "qualifier", \
@@ -41,10 +45,14 @@ for table in tables:
 
 # filter_pid (bool): If true, filter the property according the extracted list.
 # ignore_datavalue (bool): If true, do not insert specific datavalue into specific tables.
+# combine_qua_claim (bool): If true, add qualifier-hash as a field in claim.
+#   It may require more space, but time-efficient in querying qualifier.
+#   We also simplified the schema of claim.
 ignore_datavalue = True
 filter_pid = True
+combine_qua_claim = True
 # Acutal table used: entity, item, property, claim
-ignored_tables = ["badge", "qualifier", "reference",\
+ignored_tables = ["badge", "reference",\
     "referenceitem", "sitelink"]
 datavalue_tables = ["datavalue", "globecoordinate","monolingualtext", "quantity",\
     "string", "time", "wikientityid"]
@@ -80,7 +88,7 @@ def insert_many(table, data_list, max_num=-1, execute=True):
 
     tpl = "%s," * len(data_list[0])
     tpl = tpl[:-1]
-    sql = "INSERT INTO %s VALUES " % table
+    sql = "INSERT IGNORE INTO %s VALUES " % table
     sql += "({0})".format(tpl)
     try:
         if execute:
@@ -267,8 +275,9 @@ def load_data(fname, skip=0):
                 if "datavalue" in mainsnak:
                     shortvalue, valuetype = get_and_store_snak_datavalue(mainsnak, \
                         datavalue_list)
-                claim_list.append((cid, eid, en_label, _type, snaktype, pid, prop_dict[pid],\
-                    rank, datatype, valuetype, shortvalue, did))
+                if not combine_qua_claim:
+                    claim_list.append((cid, eid, en_label, _type, snaktype, pid, prop_dict[pid],\
+                        rank, datatype, valuetype, shortvalue, did))
                 # if etype == "item":
                 #     print eid, claim_list[-1]
                 if "qualifiers" in claim:
@@ -290,8 +299,12 @@ def load_data(fname, skip=0):
                             if "datavalue" in qua:
                                 qshortvalue, qvaluetype = get_and_store_snak_datavalue(qua, \
                                     datavalue_list)
-                            qualifier_list.append((qid, cid, qsnaktype, qpid, qrank, qdatatype,\
-                                qvaluetype, qshortvalue, did))
+                            if combine_qua_claim:
+                                claim_list.append((eid, pid, shortvalue, qid))
+                                qualifier_list.append((qid, qpid, qshortvalue))
+                            else:
+                                qualifier_list.append((qid, cid, qsnaktype, qpid, qrank, qdatatype,\
+                                    qvaluetype, qshortvalue, did))
 
                 if "references" in claim:
                     for ref in claim["references"]:
@@ -352,7 +365,7 @@ def get_all_properties(fname, oname):
 def main():
     start = time.time()
     # get_all_properties("C:/Users/t-honlin/Desktop/properties.txt", "./properties.txt")
-    load_data("C:/Users/t-honlin/Desktop/wikidata.json", skip=6100000)
+    load_data("C:/Users/t-honlin/Desktop/wikidata.json", skip=0)
     print time.time() - start
     pass
 
