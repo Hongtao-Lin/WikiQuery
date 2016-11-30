@@ -1,18 +1,28 @@
 import json
 import cPickle, os, sys, time
-import mysql.connector
+
+__author__ = "hunter"
+
+if __author__ == "hunter":
+    import MySQLdb as mysql
+    pwd = "1234"
+    fpath = "C:/Users/t-honlin/Desktop/wikidata.json"
+else:
+    import mysql.connector as mysql
+    pwd = "listen"
+    fpath = "/home/larryeye/WikiQuery/wikidata.json"
 
 def init_mysql(dbname):
     global cur, db
     # First extend the max_packet size.
-    db = mysql.connector.connect(host="localhost", user="root", passwd="Listen", db=dbname,\
+    db = mysql.connect(host="localhost", user="root", passwd=pwd, db=dbname,\
         charset="utf8")
     cur = db.cursor()
     cur.execute("SET GLOBAL net_buffer_length = %s" % 1000000)
     cur.execute("SET GLOBAL max_allowed_packet = 1000000000")
     db.commit()
     # The command is on for next connection.
-    db = mysql.connector.connect(host="localhost", user="root", passwd="Listen", db=dbname,\
+    db = mysql.connect(host="localhost", user="root", passwd=pwd, db=dbname,\
         charset="utf8")
     # cur.execute("SET character_set_client  = utf8mb4")
     # cur.execute("SET character_set_results = utf8mb4")
@@ -38,7 +48,8 @@ init_mysql(dbname)
 prop_dict = get_valid_properties("./properties.txt")
 tables = ["alias", "badge", "claim", "datavalue", "description", "entity", \
     "globecoordinate", "item", "label", "monolingualtext", "property", "qualifier", \
-    "quantity", "reference", "referenceitem", "sitelink", "string", "time", "wikientityid", "cqmapping", "correlation", "preced"]
+    "quantity", "reference", "referenceitem", "sitelink", "string", "time", \
+    "wikientityid", "cqmapping", "correlation", "preced"]
 data_dict = {}
 for table in tables:
     data_dict[table] = []
@@ -386,7 +397,7 @@ def get_all_properties(fname, oname):
 def main():
     start = time.time()
     # get_all_properties("C:/Users/t-honlin/Desktop/properties.txt", "./properties.txt")
-    load_data("/home/larryeye/WikiQuery/wikidata.json", skip=0)
+    load_data(fpath, skip=0)
     print time.time() - start
     pass
 

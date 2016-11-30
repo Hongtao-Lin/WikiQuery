@@ -209,7 +209,6 @@ P86	composer
 P607	conflict
 P421	located in time zone
 P94	coat of arms image
-P627	iucn-id
 P141	iucn conservation status
 P937	work location
 P971	category combines topics
