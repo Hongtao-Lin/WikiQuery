@@ -23,12 +23,15 @@ var MessageBoard = React.createClass({
 			url:'/find_entity',
 			data:{sent:val}
 		}).done(function (res) {
-			entity_list = res.data;
-			this.setState({
-				entity_list: res.data,
-				eid: this.state.eid
-			});
-
+			if (res.status == "fail") {
+				$("first_error_msg").text(res.data);
+				$("first_error_modal").modal('open');
+			} else {
+				this.setState({
+					eid: this.state.eid,
+					entity_list: res.data 
+				});
+			}
 		}.bind(this));
 	},
 	render : function(){

@@ -34,13 +34,14 @@ For web display, we use [flask](https://github.com/pallets/flask) for backend lo
 
 ## TODO
 
-- Change Material-ui svg images at Master Footer!
+- [ ] ER models in report
+- [ ] Proofreading report
+- [ ] NLQ: several small queries
+- [ ] Qualifier in query
+- [ ] Website build
 
 ## Note
 
 wikidata can be retrieved [here](http://adapt.seiee.sjtu.edu.cn/~frank/wikidata-latest-all.json.bz2), which is approx 4.5G in compressed form, 80G when extracted.
 
 
-Currently at 3628000
-Currently at 420000
-Currently at 2860000

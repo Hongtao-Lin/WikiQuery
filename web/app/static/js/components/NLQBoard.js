@@ -3,17 +3,6 @@ var ReactDOM = require("react-dom");
 
 var parser = new Parser('en');
 
-function handleQuestion(question) {
-	// parse the question
-	parser.parseQuestion(question)
-	.then(function(parsed) {
-		handleParsed(parsed);
-	}, function() {
-		// the question could not be parsed
-		showError(i18n.t('unparsable'));
-	} );
-}
-
 var NLQBoard = React.createClass({
 	getInitialState : function(){
 		return {
@@ -40,10 +29,15 @@ var NLQBoard = React.createClass({
 				url:'/nlq_ask',
 				data:{args:JSON.stringify(parsed)}
 			}).done(function (res) {
-				this.setState({
-					query: this.state.query,
-					answer: res.data 
-				});
+				if (res.status == "fail") {
+					$("nlq_error_msg").text(res.data);
+					$("nlq_error_modal").modal('open');
+				} else {
+					this.setState({
+						query: this.state.query,
+						answer: res.data 
+					});
+				}
 			}.bind(_this));
 		}, function() {
 			console.log("Error!")
