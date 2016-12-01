@@ -89,6 +89,14 @@ var SecondaryBoard = React.createClass({
   	});
 
   },
+  componentWillReceiveProps : function(nextProps) {
+  	if (nextProps.eid != this.props.eid) {
+  		this.setState({
+  			qtype: this.state.qtype,
+  			data: []
+  		})
+  	}
+  },
   shouldComponentUpdate : function(nextProps, nextState) {
   	console.log(this.state.data)
   	console.log(nextState.data)

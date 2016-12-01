@@ -88,9 +88,12 @@
 		 */
 		parseQuestion: function( question ) {
 			var deferred = $.Deferred();
-			console.log(question);
+			// console.log(question)
 			this._promise.then( function() {
 				question = question.trim();
+				question = question.replace('\'s', ' is')
+				question = question.replace('\'re', ' are')
+				console.log(question)
 				if ( question.indexOf( '?', question.length - 1 ) !== -1 ) {
 					question = question.substring( 0, question.length - 1 );
 				}
@@ -100,6 +103,7 @@
 						regString = regString.replace( new RegExp( '\\$' + a, 'g' ), attributes[a] );
 					}
 					var reg = regex( '^' + regString + '$', 'i' );
+					console.log(regString)
 					if ( reg.test( question ) ) {
 						var parts = regex.exec( question, reg );
 						var result = $.extend( {}, regexes[r], parts );
@@ -114,3 +118,13 @@
 	} );
 
 } )( jQuery, XRegExp, window );
+
+
+  // ],
+  // "attributes": {
+  //   "verb_art": "(?<verb>is|was|are|were)( (?<article>a|an|the))?",
+  //   "item": "(?<item>.+?)",
+  //   "possesive": "(?<possesive>(of|from|by)( (a|an|the))?)",
+  //   "art": "( (?<article>a|an|the))?",
+
+  // }

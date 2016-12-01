@@ -30,10 +30,11 @@ var NLQBoard = React.createClass({
 	e.preventDefault();
   },
 	submitMessage : function (val) {
+		var _this = this;
+		console.log(val)
 		parser.parseQuestion(val)
 		.then(function(parsed) {
 			console.log(parsed);
-			console.log(JSON.stringify(parsed));
 			$.ajax({
 				type:'post',
 				url:'/nlq_ask',
@@ -41,9 +42,9 @@ var NLQBoard = React.createClass({
 			}).done(function (res) {
 				this.setState({
 					query: this.state.query,
-					answer: res.tree 
+					answer: res.data 
 				});
-			}.bind(this));
+			}.bind(_this));
 		}, function() {
 			console.log("Error!")
 		});

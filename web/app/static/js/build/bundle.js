@@ -51,10 +51,11 @@
 
 
 	$(document).ready(function () {
+		$(".button-collapse").sideNav();
+
 		url = location.href.split("/");
 		url = url[url.length-1]
 		if (url == "nlq") {
-
 			ReactDOM.render(React.createElement(NLQBoard, null),document.getElementById("nlq-container"));
 		} else {
 			ReactDOM.render(React.createElement(MessageBoard, null),document.getElementById("message-board-container"));
@@ -21825,6 +21826,14 @@
 	  	});
 
 	  },
+	  componentWillReceiveProps : function(nextProps) {
+	  	if (nextProps.eid != this.props.eid) {
+	  		this.setState({
+	  			qtype: this.state.qtype,
+	  			data: []
+	  		})
+	  	}
+	  },
 	  shouldComponentUpdate : function(nextProps, nextState) {
 	  	console.log(this.state.data)
 	  	console.log(nextState.data)
@@ -21905,10 +21914,11 @@
 		e.preventDefault();
 	  },
 		submitMessage : function (val) {
+			var _this = this;
+			console.log(val)
 			parser.parseQuestion(val)
 			.then(function(parsed) {
 				console.log(parsed);
-				console.log(JSON.stringify(parsed));
 				$.ajax({
 					type:'post',
 					url:'/nlq_ask',
@@ -21916,9 +21926,9 @@
 				}).done(function (res) {
 					this.setState({
 						query: this.state.query,
-						answer: res.tree 
+						answer: res.data 
 					});
-				}.bind(this));
+				}.bind(_this));
 			}, function() {
 				console.log("Error!")
 			});

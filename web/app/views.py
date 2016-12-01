@@ -15,11 +15,11 @@ def load_property(fname):
     f = open(fname)
     prop_dict = {}
     for line in f.xreadlines():
-        pid, pname = line.decode("utf8").split("\t")
+        pid, pname = line.decode("utf8").strip().split("\t")
         prop_dict[pname] = pid
     f.close()
     return prop_dict
-pfname = "../../properties.txt"
+pfname = "../properties.txt"
 prop_dict = load_property(pfname)
 
 def find_tree(eid):
@@ -41,9 +41,24 @@ def find_cooccur(eid):
     return data
 
 def find_entityid(ename):
+    """Take the first one if many applies
+    Prompt: return the error message ready to show in front-end.
+    """
     eid = "Q1"
     prompt = ""
     return eid, prompt
+
+
+def find_aliasid(ename):
+    """Take the first one if many applies"""
+    eid = "Q1"
+    prompt = ""
+    return eid, prompt
+
+def find_value(eid):
+    value = "ha"
+    prompt = ""
+    return value, prompt
 
 def find_description(eid):
     desc = "desc"
@@ -51,7 +66,7 @@ def find_description(eid):
     return desc, prompt
 
 def find_claim(eid, pid):
-    """Prompt retirm "is_entity" if the corresponding value is entity!"""
+    """Prompt return "is_entity" if the corresponding value is entity!"""
     claim = "claim"
     prompt = ""
     return claim, prompt
@@ -76,14 +91,18 @@ def nlq_ask():
         prompt = "Cannot find the entity you mentioned!"
     elif not prop:  # Identify as find a description 
         eid, prompt = find_entityid(item)
-        if not prompt:
-            answer, prompt = find_description(answer["eid"]) 
+        if prompt:  # Try to find alias that matches this item.
+            eid, prompt = find_aliasid(item)
+            if not prompt:
+                answer, prompt = find_description(eid)
     else:
         eid, prompt = find_entityid(item)
         if not prompt:
             pid = prop_dict[prop]
             answer, prompt = find_claim(eid, pid)
-            if 
+            if prompt == "is_entity":
+                answer, prompt = find_value(answer)
+
 
     answer = "Just a test"
     if prompt:

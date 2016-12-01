@@ -6,6 +6,11 @@
       "callback": "$article $item $verb born on $value."
     },
     {
+      "regex": "(when|what) $verb_art birthday of $item",
+      "property": "date of birth",
+      "callback": "$article $item $verb born in $value."
+    },
+    {
       "regex": "where $verb_art $item born",
       "property": "place of birth",
       "callback": "$article $item $verb born in $value."
@@ -26,15 +31,30 @@
       "callback": "$article $item $verb married to $value."
     },
     {
+      "regex": "who $verb_art $item's (wife|husband)",
+      "property": "spouse",
+      "callback": "$article $item $verb married to $value."
+    },
+    {
+      "regex": "who (did|does) $item marry",
+      "property": "spouse",
+      "callback": "$article $item $verb married to $value."
+    },
+    {
       "regex": "where $verb_art $item",
       "property": "is located in",
       "callback": "$article $item $property $value."
     },
     {
-      "regex": "(what|when|where|why|who|whose|which|how|how much|how many) $verb_art (?<property>.+?) $possesive $item"
+      "regex": "how tall $verb_art $item",
+      "property": "height",
+      "callback": "$article $item $property $value."
     },
     {
-      "regex": "(what|when|where|why|who|whose|which|how|how much|how many) $verb_art $item"
+      "regex": "(what|where|who|which) $verb_art (?<property>.+?) $possesive $item"
+    },
+    {
+      "regex": "(what|where|who|which) $verb_art $item"
     }
   ],
   "attributes": {

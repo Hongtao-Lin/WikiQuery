@@ -14,7 +14,6 @@ P1086	atomic number
 P479	input device
 P1801	commemorative plaque image
 P414	stock exchange
-P1183	gewässerkennzahl
 P2017	isomeric smiles
 P953	full text available at
 P411	canonization status

@@ -8,6 +8,7 @@
   <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <!--Import materialize.css-->
   <link type="text/css" rel="stylesheet" href="../static/css/materialize.min.css"  media="screen,projection"/>
+  <link type="text/css" rel="stylesheet" href="../static/css/layout.css">
 
   <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -21,7 +22,41 @@
 </head>
 
 <body>
-  {% block body %}{% endblock %}
+  <header>
+    <nav class="top-nav">
+      <div class="container">
+        <div class="nav-wrapper">
+          {% block header_title %}{% endblock %}
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <a href="#" data-activates="nav-mobile" class="button-collapse top-nav fill hide-on-large-only">
+        <i class="material-icons">menu</i>
+      </a>
+    </div>
+    <ul id="nav-mobile" class="side-nav fixed" style="transform: translateX(0%);">
+      <li class="logo">
+        <a id="logo-container" class="brand-logo" href="/">
+          WikiQuery
+        </a>
+      </li>
+      <li><div class="divider"></div></li>
+      <li class=""><a href="/" class="waves-effect waves-teal">Standard Query</a></li>
+      <li class=""><a href="/nlq" class="waves-effect waves-teal">Natural Language Query</a></li>
+      <li><div class="divider"></div></li>
+      <li class=""><a class="subheader">Resources</a></li>
+      <li class=""><a class="waves-effect waves-teal" href="https://github.com/Hunter-Lin/WikiQuery/">Github</a></li>
+      <li class=""><a class="waves-effect waves-teal" href="http://materializecss.com/">Material Design</a></li>
+    </ul>
+  </header>
+  <main>
+    <div class="container">
+      <div class="row query-container">
+        {% block body %}{% endblock %}
+      </div>
+    </div>
+  </main>
 
   <script type="text/javascript" src="../static/js/build/bundle.js"></script>
 </body>
