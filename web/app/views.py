@@ -80,6 +80,7 @@ def nlq():
     return render_template("nlq.html")
 
 @app.route("/nlq_ask", methods=["POST"])
+# Note: prompt is the specific error message to display in final answer.
 def nlq_ask():
     args = request.form.get("args")
     args = json.loads(args)
@@ -89,18 +90,21 @@ def nlq_ask():
     prop = args.get("property", "")
     if not item:
         prompt = "Cannot find the entity you mentioned!"
-    elif not prop:  # Identify as find a description 
-        eid, prompt = find_entityid(item)
-        if prompt:  # Try to find alias that matches this item.
-            eid, prompt = find_aliasid(item)
-            if not prompt:
-                answer, prompt = find_description(eid)
-    else:
-        eid, prompt = find_entityid(item)
-        if not prompt:
-            pid = prop_dict[prop]
+
+    # get eid of the item according to its name or alias.
+    eid, prompt = find_entityid(item)
+    if prompt:  
+        eid, prompt = find_aliasid(item)
+    if eid:
+        # if no property detected, we consider it as to find a description 
+        if not prop:
+            answer, prompt = find_description(eid)
+        else:
+            pid = prop_dict[prop]   # get pid according to dict.
+            # find the value in claim triple, the prompt maybe error msg, "is_entity" or ""
             answer, prompt = find_claim(eid, pid)
             if prompt == "is_entity":
+                # if the answer is a eid, find its value.
                 answer, prompt = find_value(answer)
 
 
