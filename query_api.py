@@ -1,0 +1,139 @@
+import json
+import cPickle, os, sys, time
+import mysql.connector
+
+def init_mysql():
+    global cur, db
+    # First extend the max_packet size.
+    db = mysql.connector.connect(host="localhost", user="root", passwd="Listen", db="wikidata_simplified",\
+        charset="utf8")
+    cur = db.cursor()
+    cur.execute("SET GLOBAL net_buffer_length = 1000000;")
+    cur.execute("SET GLOBAL max_allowed_packet = 1000000000;")
+    db.commit()
+    # The command is on for next connection.
+
+    db = mysql.connector.connect(host="localhost", user="root", passwd="Listen", db="wikidata_simplified",\
+        charset="utf8")
+    cur = db.cursor()
+    cur.execute("SET foreign_key_checks = 0")
+    cur.execute("SET NAMES 'utf8'")
+    db.commit()
+
+def get_valid_properties(fname):
+    prop_dict = {}
+    f = open(fname)
+    for line in f.readlines():
+        line = line.decode("utf8").strip().split("\t")
+        pid = line[0]
+        prop_dict[pid] = line[-1]
+    f.close()
+    return prop_dict
+
+def query_entities_from_name(name):
+	sql = "select eid from Entity where label = \"%s\"" % name
+	print sql
+	cur.execute(sql)
+	data = cur.fetchall()
+	return data
+
+def query_preceding_categories(eid, detail = True):
+	# detail is bool
+	cur.execute("select weid from Preced where eid = \"%s\"" % eid)
+	weid_set = cur.fetchall()
+
+	query_results = []
+	if detail:
+		for weid in weid_set:
+			# print weid,"weid"
+		# I plan to create index of label.
+			cur.execute("select label from Entity where eid = \"%s\"" % weid)
+			res = cur.fetchall()
+			if len(res) > 0:
+				res = res[0][0]
+				query_results.append(weid[0]+" "+res)
+			else:
+				query_results.append(weid[0])
+		return query_results	
+	else:
+		return weid_set
+	
+
+def query_entity_cooccured(eid):
+	global cur
+	cur.execute("select distinct(weid) from Correlation where eid = \"%s\"" % eid)
+	eset1 = cur.fetchall()
+	cur.execute("select distinct(eid) from Correlation where weid = \"%s\"" % eid)
+	eset2 = cur.fetchall()
+	res = eset1 + eset2
+	return list(set(res))
+
+def query_statements_properties(eid):
+	# all statement
+	global prop_dict,cur
+	cur.execute("select cid,property,value from Claim where eid = \"%s\"" % eid)
+	res = cur.fetchall()
+	query_results = []
+	for cid,p,v in res:
+		statement = ""
+		pname = prop_dict[p]
+		cur.execute("select qid from Cqmapping where cid = \"%s\"" % cid)
+		qid_set = cur.fetchall()
+		# print v
+		v = convert_entity_to_name(v)
+		# print v
+		# print v
+		statement = statement + pname + " " + v + " "
+		for qid in qid_set:
+			cur.execute("select property,value from Qualifier where qid = \"%s\"" % qid)
+			qp,qv = cur.fetchone()
+			qv = convert_entity_to_name(qv)
+			statement = statement + prop_dict[qp] + " " + qv + " "
+		query_results.append(statement)
+
+	return query_results
+
+
+def convert_entity_to_name(eid):
+	# took it as the entity. =.=
+	global cur
+	if eid[0] == 'Q':
+		sql = "select label from Entity where eid = \"%s\"" % eid
+		# print sql,eid
+		cur.execute(sql)
+		res = cur.fetchall()
+		if len(res) > 0:
+			return res[0][0] # the first one and the first element
+		else:
+			return eid+" (Not found) "
+	else:
+		return eid
+
+
+init_mysql();
+
+# query 1
+print "query 1"
+start = time.time()
+print query_entities_from_name('Aleksandr Chudakov')
+print time.time() - start
+
+# query 2
+print "query 2"
+start = time.time()
+print query_preceding_categories("Q1372409");
+print time.time() - start
+
+# query 3
+print "query 3"
+start = time.time()
+print query_entity_cooccured("Q1372409")
+print time.time() - start
+
+
+prop_dict = get_valid_properties("./properties.txt")
+# query 4
+print "query 4"
+start = time.time()
+print query_statements_properties("Q1372409")
+print time.time() - start

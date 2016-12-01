@@ -33,7 +33,7 @@ def get_valid_properties(fname):
     return prop_dict
 
 # INIT
-dbname = "wikidata_simplified2"
+dbname = "wikidata_simplified"
 init_mysql(dbname)
 prop_dict = get_valid_properties("./properties.txt")
 tables = ["alias", "badge", "claim", "datavalue", "description", "entity", \
@@ -53,7 +53,7 @@ filter_pid = True
 combine_qua_claim = True
 # Acutal table used: entity, item, property, claim
 ignored_tables = ["badge", "reference",\
-    "referenceitem", "sitelink"]
+    "referenceitem", "sitelink", "label", "description"]
 datavalue_tables = ["datavalue", "globecoordinate","monolingualtext", "quantity",\
     "string", "time", "wikientityid"]
 if ignore_datavalue:
@@ -220,7 +220,7 @@ def load_data(fname, skip=0):
         for aliases in entity["aliases"].values():
             for alias in aliases:
                 lang, val = alias["language"], alias["value"]
-                if lang not in ["en", "zh-hans"]:
+                if lang not in ["en"]:
                     continue
                 alias_list.append((eid, lang, val))
         data_dict["alias"] += alias_list
@@ -229,9 +229,9 @@ def load_data(fname, skip=0):
         label_list = []
         for label in entity["labels"].values():
             lang, val = label["language"], label["value"]
-            label_list.append((eid, lang, val))
-            if lang not in ["en", "zh-hans"]:
+            if lang not in ["en"]:
                 continue
+            label_list.append((eid, lang, val))
             if lang == "en":
                 en_label = val
         data_dict["label"] += label_list
@@ -239,7 +239,7 @@ def load_data(fname, skip=0):
         desc_list = []
         for desc in entity["descriptions"].values():
             lang, val = desc["language"], desc["value"]
-            if lang not in ["en", "zh-hans"]:
+            if lang not in ["en"]:
                 continue
             desc_list.append((eid, lang, val))
             if lang == "en":
@@ -356,7 +356,7 @@ def load_data(fname, skip=0):
         data_dict["preced"] += preced_list
         data_dict["cqmapping"] += cqmapping_list
 
-        if line_cnt % 10000 == 0:
+        if line_cnt % 2000 == 0:
             sys.stdout.flush()
             commit_all(data_dict)
             print line_cnt, time.time() - start
