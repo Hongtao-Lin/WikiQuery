@@ -2,3 +2,6 @@ data/wikidata-latest-all.json
 env/
 flaskapp/
 *.pyc
+*.pdf
+*.docx
+*.doc
