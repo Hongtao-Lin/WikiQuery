@@ -18,7 +18,12 @@ For data import, run `python preprocess.py`. Note about some global config in it
 
 For web display, we use [flask](https://github.com/pallets/flask) for backend logic, [react-js](https://github.com/facebook/react) and [materialize](https://github.com/Dogfalo/materialize) for front display: 
 
-
+Run the web app:
+```bash
+cd web/
+python run.py
+```
+Remember to set up the sql connection in `web/app/src/query_api.py`
 
 ## Architecture
 
