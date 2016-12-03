@@ -103,7 +103,7 @@
 						regString = regString.replace( new RegExp( '\\$' + a, 'g' ), attributes[a] );
 					}
 					var reg = regex( '^' + regString + '$', 'i' );
-					console.log(regString)
+					// console.log(regString)
 					if ( reg.test( question ) ) {
 						var parts = regex.exec( question, reg );
 						var result = $.extend( {}, regexes[r], parts );

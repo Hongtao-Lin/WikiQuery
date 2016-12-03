@@ -15,4 +15,5 @@ $(document).ready(function () {
 		ReactDOM.render(<MessageBoard/>,document.getElementById("message-board-container"));
 		
 	}
+	$(".modal").modal();
 });

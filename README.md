@@ -34,14 +34,19 @@ For web display, we use [flask](https://github.com/pallets/flask) for backend lo
 
 ## TODO
 
-- [ ] ER models in report
-- [ ] Proofreading report
+- [x] Loading event.
 - [ ] NLQ: several small queries
 - [ ] Qualifier in query
-- [ ] Website build
 
+- [ ] Website build for listen 
+- [ ] Tree: Some "instance of" not included! Type "Fantasy" (依然范特西) Many entities fail to find any tree entity...
+- [ ] Co-occurred: Sort in eid order!
+- [ ] Statements: Sort them in Property order!
+- [ ] NLQ: Find_claim_value(eid, pid) is needed!
+- [ ] Add "#properties" in table "entity" for choosing from name.
 ## Note
 
-wikidata can be retrieved [here](http://adapt.seiee.sjtu.edu.cn/~frank/wikidata-latest-all.json.bz2), which is approx 4.5G in compressed form, 80G when extracted.
+Wikidata can be retrieved [here](http://adapt.seiee.sjtu.edu.cn/~frank/wikidata-latest-all.json.bz2), which is approx 4.5G in compressed form, 80G when extracted.
 
 
+Currently at 2450000

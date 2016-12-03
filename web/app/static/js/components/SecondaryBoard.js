@@ -56,18 +56,26 @@ var SecondaryBoard = React.createClass({
   getInitialState : function(){
   	return {
   		qtype: "",
-  		data: []
+  		data: [],
+  		prompt: ""
   	}
   },
 	submitSecondaryMessage : function (eid, qtype) {
+		$("#second_loading").addClass("progress");
 		$.ajax({
 			type:'post',
 			url:'/secondary_query',
 			data:{eid: eid, qtype: qtype}
 		}).done(function (res) {
+			$("#second_loading").removeClass("progress");
+			if (res.status == "fail") {
+				$("#error_msg").text(res.prompt);
+				$("#error_modal").modal('open');
+			}
 			this.setState({
 				qtype: parseInt(this.state.qtype),
-				data: res.data
+				data: res.data,
+		  		prompt: res.prompt
 			});
 
 		}.bind(this));
@@ -84,7 +92,9 @@ var SecondaryBoard = React.createClass({
   	$(element).on('change',function(){
 	    ele.setState({
 	    	qtype: parseInt($(this).val()),
-	    	data: []
+	    	data: [],
+	  		prompt: ""
+
 	    });
   	});
 
@@ -93,15 +103,16 @@ var SecondaryBoard = React.createClass({
   	if (nextProps.eid != this.props.eid) {
   		this.setState({
   			qtype: this.state.qtype,
-  			data: []
+  			data: [],
+	  		prompt: ""
   		})
   	}
   },
   shouldComponentUpdate : function(nextProps, nextState) {
-  	console.log(this.state.data)
-  	console.log(nextState.data)
+  	// console.log(this.state.data)
+  	// console.log(nextState.data)
   	var isSame = (this.state.data == nextState.data)
-  	console.log(isSame)
+  	// console.log(isSame)
   	// var isSame = (this.state.qtype == nextState.qtype) && (this.props.eid == nextProps.eid)
   	return !isSame
   },
@@ -109,31 +120,40 @@ var SecondaryBoard = React.createClass({
 		var qtype = this.state.qtype;
 		return(
 			<div>
+			<div className="row">
+				<h5>Know more about the selected entity:</h5>
 			  <form 
 			  	id="secondary_form" 
 			  	className="input-field col s12"
 			  	onSubmit={this.handleSubmit}>
-			    <select 
-			    	ref="dropdown" 
-			    	defaultValue="" >
-			      <option value="" disabled>Choose your option</option>
-			      <option value="1">Find me the precedent categories it belongs to</option>
-			      <option value="2">Find me the entities that co-occurred with it</option>
-			      <option value="3">Find me the properties and statements about it</option>
-			    </select>
-			    <label>Query Select</label>
-			    <input 
-			    	type="submit" 
-			    	value="Submit" 
-			    	className="waves-effect waves-light btn" 
-			    	/>
-			    {this.state.data.length>0 &&
-			    	 <CustomMessage qtype={this.state.qtype} message={this.state.data}/>
-			    }
+			  	<div className="row">
+			  		<div className="input-field col s12">
+					    <select 
+					    	ref="dropdown" 
+					    	defaultValue="" >
+					      <option value="" disabled>Choose your option</option>
+					      <option value="1">Find me the precedent categories it belongs to</option>
+					      <option value="2">Find me the entities that co-occurred with it</option>
+					      <option value="3">Find me the properties and statements about it</option>
+					    </select>
+					    <label>Select a Query</label>
+			  		</div>
+			  	</div>
+			  	<i className="waves-effect waves-light btn waves-input-wrapper">
+				<input type="submit" value="Submit" className="waves-button-input" />
+				</i>
 			  </form>
 			</div>
+		  	<div className="" id="second_loading">
+				<div className="indeterminate"></div>
+			</div>  		
+		    {this.state.data.length>0 &&
+		    	 <CustomMessage qtype={this.state.qtype} message={this.state.data}/>
+		    }
+		    </div>
 		);
 	}
+				// <input type="submit" value="Submit" className="waves-effect waves-light btn" />
 });
 
 module.exports = SecondaryBoard;

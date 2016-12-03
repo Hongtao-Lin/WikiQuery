@@ -9,42 +9,52 @@ var MessageBoard = React.createClass({
 		return {
 			entity_list: [],
 			eid: "",
+			prompt: ""
 		}
 	},
 	setEntityID : function(eid) {
 		this.setState({
 			entity_list: this.state.entity_list,
-			eid: eid
+			eid: eid,
+			prompt: ""
 		});
 	},
 	submitMessage : function (val) {
+		this.setState({
+			eid: "",
+			entity_list: [],
+			prompt: ""
+		});
+		$("#first_loading").addClass("progress");
 		$.ajax({
 			type:'post',
 			url:'/find_entity',
 			data:{sent:val}
 		}).done(function (res) {
+			$("#first_loading").removeClass("progress");
 			if (res.status == "fail") {
-				$("first_error_msg").text(res.data);
-				$("first_error_modal").modal('open');
-			} else {
-				this.setState({
-					eid: this.state.eid,
-					entity_list: res.data 
-				});
+				$("#error_msg").text(res.prompt);
+				$("#error_modal").modal('open');
 			}
+			this.setState({
+				eid: this.state.eid,
+				entity_list: res.data,
+				prompt: res.prompt 
+			});
 		}.bind(this));
 	},
 	render : function(){
 		return(
-			<div>
-		        <h5>Search an entity by its name:</h5>
+			<div className="container">
 				<MessageForm submitMessage={this.submitMessage}/>
+			  	<div className="" id="first_loading">
+					<div className="indeterminate"></div>
+				</div>  		
 				{this.state.entity_list.length>0 &&
 					<Message message={this.state.entity_list} setEntityID={this.setEntityID}/>
 				}
 				{this.state.eid != "" &&
-					[<h5 key="0">Know more about the selected entity:</h5>,
-					<SecondaryBoard key="1" eid={this.state.eid}  />]
+					<SecondaryBoard eid={this.state.eid}  />
 				}
 			</div>
 		)

@@ -61,6 +61,7 @@
 			ReactDOM.render(React.createElement(MessageBoard, null),document.getElementById("message-board-container"));
 			
 		}
+		$(".modal").modal();
 	});
 
 
@@ -182,83 +183,35 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
-	function defaultSetTimout() {
-	    throw new Error('setTimeout has not been defined');
-	}
-	function defaultClearTimeout () {
-	    throw new Error('clearTimeout has not been defined');
-	}
 	(function () {
 	    try {
-	        if (typeof setTimeout === 'function') {
-	            cachedSetTimeout = setTimeout;
-	        } else {
-	            cachedSetTimeout = defaultSetTimout;
-	        }
+	        cachedSetTimeout = setTimeout;
 	    } catch (e) {
-	        cachedSetTimeout = defaultSetTimout;
+	        cachedSetTimeout = function () {
+	            throw new Error('setTimeout is not defined');
+	        }
 	    }
 	    try {
-	        if (typeof clearTimeout === 'function') {
-	            cachedClearTimeout = clearTimeout;
-	        } else {
-	            cachedClearTimeout = defaultClearTimeout;
-	        }
+	        cachedClearTimeout = clearTimeout;
 	    } catch (e) {
-	        cachedClearTimeout = defaultClearTimeout;
+	        cachedClearTimeout = function () {
+	            throw new Error('clearTimeout is not defined');
+	        }
 	    }
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
 	        return setTimeout(fun, 0);
+	    } else {
+	        return cachedSetTimeout.call(null, fun, 0);
 	    }
-	    // if setTimeout wasn't available but was latter defined
-	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-	        cachedSetTimeout = setTimeout;
-	        return setTimeout(fun, 0);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedSetTimeout(fun, 0);
-	    } catch(e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-	            return cachedSetTimeout.call(null, fun, 0);
-	        } catch(e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-	            return cachedSetTimeout.call(this, fun, 0);
-	        }
-	    }
-
-
 	}
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
+	        clearTimeout(marker);
+	    } else {
+	        cachedClearTimeout.call(null, marker);
 	    }
-	    // if clearTimeout wasn't available but was latter defined
-	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-	        cachedClearTimeout = clearTimeout;
-	        return clearTimeout(marker);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedClearTimeout(marker);
-	    } catch (e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-	            return cachedClearTimeout.call(null, marker);
-	        } catch (e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-	            return cachedClearTimeout.call(this, marker);
-	        }
-	    }
-
-
-
 	}
 	var queue = [];
 	var draining = false;
@@ -4125,39 +4078,52 @@
 			return {
 				entity_list: [],
 				eid: "",
+				prompt: ""
 			}
 		},
 		setEntityID : function(eid) {
 			this.setState({
 				entity_list: this.state.entity_list,
-				eid: eid
+				eid: eid,
+				prompt: ""
 			});
 		},
 		submitMessage : function (val) {
+			this.setState({
+				eid: "",
+				entity_list: [],
+				prompt: ""
+			});
+			$("#first_loading").addClass("progress");
 			$.ajax({
 				type:'post',
 				url:'/find_entity',
 				data:{sent:val}
 			}).done(function (res) {
-				entity_list = res.data;
+				$("#first_loading").removeClass("progress");
+				if (res.status == "fail") {
+					$("#error_msg").text(res.prompt);
+					$("#error_modal").modal('open');
+				}
 				this.setState({
+					eid: this.state.eid,
 					entity_list: res.data,
-					eid: this.state.eid
+					prompt: res.prompt 
 				});
-
 			}.bind(this));
 		},
 		render : function(){
 			return(
-				React.createElement("div", null, 
-			        React.createElement("h5", null, "Search an entity by its name:"), 
+				React.createElement("div", {className: "container"}, 
 					React.createElement(MessageForm, {submitMessage: this.submitMessage}), 
+				  	React.createElement("div", {className: "", id: "first_loading"}, 
+						React.createElement("div", {className: "indeterminate"})
+					), 		
 					this.state.entity_list.length>0 &&
 						React.createElement(Message, {message: this.state.entity_list, setEntityID: this.setEntityID}), 
 					
 					this.state.eid != "" &&
-						[React.createElement("h5", {key: "0"}, "Know more about the selected entity:"),
-						React.createElement(SecondaryBoard, {key: "1", eid: this.state.eid})]
+						React.createElement(SecondaryBoard, {eid: this.state.eid})
 					
 				)
 			)
@@ -21639,7 +21605,8 @@
 	  },
 		render : function(){
 			return(
-				React.createElement("div", {className: "row"}, 
+			React.createElement("div", {className: "row"}, 
+				React.createElement("h5", null, "Search an entity by its name:"), 
 			    React.createElement("form", {className: "col s12", onSubmit: this.handleSubmit}, 
 			      React.createElement("div", {className: "row"}, 
 			        React.createElement("div", {className: "input-field col s12"}, 
@@ -21647,7 +21614,7 @@
 			          React.createElement("label", {htmlFor: "entity"}, "English charcaters only")
 			        )
 			      ), 
-			      React.createElement("input", {type: "submit", value: "Submit", className: "waves-effect waves-light btn"})
+			      React.createElement("input", {type: "submit", value: "Search", className: "waves-effect waves-light btn"})
 			    )
 			  )
 			)
@@ -21793,18 +21760,26 @@
 	  getInitialState : function(){
 	  	return {
 	  		qtype: "",
-	  		data: []
+	  		data: [],
+	  		prompt: ""
 	  	}
 	  },
 		submitSecondaryMessage : function (eid, qtype) {
+			$("#second_loading").addClass("progress");
 			$.ajax({
 				type:'post',
 				url:'/secondary_query',
 				data:{eid: eid, qtype: qtype}
 			}).done(function (res) {
+				$("#second_loading").removeClass("progress");
+				if (res.status == "fail") {
+					$("#error_msg").text(res.prompt);
+					$("#error_modal").modal('open');
+				}
 				this.setState({
 					qtype: parseInt(this.state.qtype),
-					data: res.data
+					data: res.data,
+			  		prompt: res.prompt
 				});
 
 			}.bind(this));
@@ -21821,7 +21796,9 @@
 	  	$(element).on('change',function(){
 		    ele.setState({
 		    	qtype: parseInt($(this).val()),
-		    	data: []
+		    	data: [],
+		  		prompt: ""
+
 		    });
 	  	});
 
@@ -21830,15 +21807,16 @@
 	  	if (nextProps.eid != this.props.eid) {
 	  		this.setState({
 	  			qtype: this.state.qtype,
-	  			data: []
+	  			data: [],
+		  		prompt: ""
 	  		})
 	  	}
 	  },
 	  shouldComponentUpdate : function(nextProps, nextState) {
-	  	console.log(this.state.data)
-	  	console.log(nextState.data)
+	  	// console.log(this.state.data)
+	  	// console.log(nextState.data)
 	  	var isSame = (this.state.data == nextState.data)
-	  	console.log(isSame)
+	  	// console.log(isSame)
 	  	// var isSame = (this.state.qtype == nextState.qtype) && (this.props.eid == nextProps.eid)
 	  	return !isSame
 	  },
@@ -21846,31 +21824,40 @@
 			var qtype = this.state.qtype;
 			return(
 				React.createElement("div", null, 
+				React.createElement("div", {className: "row"}, 
+					React.createElement("h5", null, "Know more about the selected entity:"), 
 				  React.createElement("form", {
 				  	id: "secondary_form", 
 				  	className: "input-field col s12", 
 				  	onSubmit: this.handleSubmit}, 
-				    React.createElement("select", {
-				    	ref: "dropdown", 
-				    	defaultValue: ""}, 
-				      React.createElement("option", {value: "", disabled: true}, "Choose your option"), 
-				      React.createElement("option", {value: "1"}, "Find me the precedent categories it belongs to"), 
-				      React.createElement("option", {value: "2"}, "Find me the entities that co-occurred with it"), 
-				      React.createElement("option", {value: "3"}, "Find me the properties and statements about it")
-				    ), 
-				    React.createElement("label", null, "Query Select"), 
-				    React.createElement("input", {
-				    	type: "submit", 
-				    	value: "Submit", 
-				    	className: "waves-effect waves-light btn"}
-				    	), 
-				    this.state.data.length>0 &&
-				    	 React.createElement(CustomMessage, {qtype: this.state.qtype, message: this.state.data})
-				    
+				  	React.createElement("div", {className: "row"}, 
+				  		React.createElement("div", {className: "input-field col s12"}, 
+						    React.createElement("select", {
+						    	ref: "dropdown", 
+						    	defaultValue: ""}, 
+						      React.createElement("option", {value: "", disabled: true}, "Choose your option"), 
+						      React.createElement("option", {value: "1"}, "Find me the precedent categories it belongs to"), 
+						      React.createElement("option", {value: "2"}, "Find me the entities that co-occurred with it"), 
+						      React.createElement("option", {value: "3"}, "Find me the properties and statements about it")
+						    ), 
+						    React.createElement("label", null, "Select a Query")
+				  		)
+				  	), 
+				  	React.createElement("i", {className: "waves-effect waves-light btn waves-input-wrapper"}, 
+					React.createElement("input", {type: "submit", value: "Submit", className: "waves-button-input"})
+					)
 				  )
-				)
+				), 
+			  	React.createElement("div", {className: "", id: "second_loading"}, 
+					React.createElement("div", {className: "indeterminate"})
+				), 		
+			    this.state.data.length>0 &&
+			    	 React.createElement(CustomMessage, {qtype: this.state.qtype, message: this.state.data})
+			    
+			    )
 			);
 		}
+					// <input type="submit" value="Submit" className="waves-effect waves-light btn" />
 	});
 
 	module.exports = SecondaryBoard;
@@ -21887,22 +21874,12 @@
 
 	var parser = new Parser('en');
 
-	function handleQuestion(question) {
-		// parse the question
-		parser.parseQuestion(question)
-		.then(function(parsed) {
-			handleParsed(parsed);
-		}, function() {
-			// the question could not be parsed
-			showError(i18n.t('unparsable'));
-		} );
-	}
-
 	var NLQBoard = React.createClass({displayName: "NLQBoard",
 		getInitialState : function(){
 			return {
 				answer: "",
 				query: "",
+				prompt: ""
 			}
 		},
 	  handleChange(e) {
@@ -21915,18 +21892,24 @@
 	  },
 		submitMessage : function (val) {
 			var _this = this;
-			console.log(val)
+			// console.log(val);
+			$("#nlq_loading").addClass("progress");
 			parser.parseQuestion(val)
 			.then(function(parsed) {
-				console.log(parsed);
+				$("#second_loading").removeClass("progress");
 				$.ajax({
 					type:'post',
 					url:'/nlq_ask',
 					data:{args:JSON.stringify(parsed)}
 				}).done(function (res) {
+					if (res.status == "fail") {
+						$("#error_msg").text(res.prompt);
+						$("#error_modal").modal('open');
+					}
 					this.setState({
 						query: this.state.query,
-						answer: res.data 
+						answer: res.data ,
+						prompt: ""
 					});
 				}.bind(_this));
 			}, function() {
@@ -21937,26 +21920,31 @@
 			return(
 				React.createElement("div", null, 
 			        React.createElement("h5", null, "Say something:"), 
-				React.createElement("div", {className: "row"}, 
-			    React.createElement("form", {className: "col s12", onSubmit: this.handleSubmit}, 
-			      React.createElement("div", {className: "row"}, 
-			        React.createElement("div", {className: "input-field col s12"}, 
-			          React.createElement("input", {
-			          	id: "query", 
-			          	type: "text", 
-			          	className: "validate", 
-			          	value: this.state.query, 
-			          	onChange: this.handleChange}), 
-			          React.createElement("label", {htmlFor: "query"}, "English charcaters only")
-			        )
-			      ), 
-			      React.createElement("input", {type: "submit", value: "Submit", className: "waves-effect waves-light btn"})
-			    )
-			  ), 
+					React.createElement("div", {className: "row"}, 
+				    React.createElement("form", {className: "col s12", onSubmit: this.handleSubmit}, 
+				      React.createElement("div", {className: "row"}, 
+				        React.createElement("div", {className: "input-field col s12"}, 
+				          React.createElement("input", {
+				          	id: "query", 
+				          	type: "text", 
+				          	className: "validate", 
+				          	value: this.state.query, 
+				          	onChange: this.handleChange}), 
+				          React.createElement("label", {htmlFor: "query"}, "English charcaters only")
+				        )
+				      ), 
+				    React.createElement("input", {type: "submit", value: "Submit", className: "waves-effect waves-light btn"})
+				    )
+				    ), 
 					this.state.answer != "" &&
-						React.createElement("p", null, this.state.answer)
+						[React.createElement("i", {className: "material-icons medium"}, "label_outline"),
+						React.createElement("div", {className: "col s12", id: "nlq_div"}, 
+							React.createElement("p", {className: "z-depth-3", id: "nlq_answer"}, 
+							this.state.answer
+							)
+						)]
 					
-				)
+			  )
 			)
 		}
 	});
