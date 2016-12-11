@@ -201,3 +201,18 @@ a.button-collapse.top-nav {
     font-size: 48px;
     z-index: 2;
 }
+
+.modal-content p {
+    padding: 0 20px;
+}
+
+#nlq_div {
+    padding: 0;
+}
+
+#nlq_answer {
+    line-height: 40px;
+    min-height: 40px;
+    padding: 10px 20px;
+    background-color: rgb(253, 217, 217);
+}

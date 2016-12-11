@@ -16,7 +16,8 @@ var MessageForm = React.createClass({
   },
 	render : function(){
 		return(
-			<div className="row">
+		<div className="row">
+			<h5>Search an entity by its name:</h5>
 		    <form className="col s12" onSubmit={this.handleSubmit}>
 		      <div className="row">
 		        <div className="input-field col s12">

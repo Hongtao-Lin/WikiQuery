@@ -1,0 +1,288 @@
+P277	programming language
+P1038	relative
+P1366	replaced by
+P2358	roman praenomen
+P1416	affiliation
+P1050	medical condition
+P296	station code
+P1132	number of participants
+P1260	cultural heritage database in sweden
+P1101	floors above ground
+P1148	neutron number
+P749	parent organization
+P1086	atomic number
+P479	input device
+P1801	commemorative plaque image
+P414	stock exchange
+P2017	isomeric smiles
+P953	full text available at
+P411	canonization status
+P1092	total produced
+P287	designer
+P1813	short name
+P1748	nci thesaurus id
+P15	route map
+P98	editor
+P117	chemical structure
+P1408	licensed to broadcast to
+P579	ima status and/or rank
+P375	space launch vehicle
+P448	location of spacecraft launch
+P91	sexual orientation
+P1103	number of platform tracks
+P619	time of spacecraft launch
+P729	service entry
+P1877	after a work by
+P2386	diameter
+P1191	first performance
+P664	organizer
+P1104	number of pages
+P393	edition number
+P115	home venue
+P184	doctoral advisor
+P1456	list of monuments
+P2959	permanent duplicated item
+P427	taxonomic type
+P181	taxon range map image
+P1545	series ordinal
+P177	crosses
+P1142	political ideology
+P991	successful candidate
+P289	vessel class
+P1971	number of children
+P275	license
+P97	noble title
+P676	lyrics by
+P931	place served by airport
+P1066	student of
+P109	signature
+P215	spectral class
+P2079	fabrication method
+P1334	coordinate of easternmost point
+P1335	coordinate of westernmost point
+P1333	coordinate of southernmost point
+P2348	period
+P2416	sports discipline competed in
+P1332	coordinate of northernmost point
+P14	highway marker
+P1064	track gauge
+P376	located on astronomical body
+P2554	production designer
+P1792	category of associated people
+P1465	category for people who died here
+P692	gene atlas image
+P647	drafted by
+P611	religious order
+P412	voice type
+P238	iata airport code
+P128	regulates (molecular biology)
+P101	field of work
+P1346	winner
+P814	iucn protected areas category
+P466	occupant
+P1181	numeric value
+P437	distribution
+P291	place of publication
+P1313	office held by head of government
+P591	ec number
+P3096	kml file
+P948	wikivoyage banner
+P708	diocese
+P2053	watershed area
+P144	based on
+P118	league
+P1083	maximum capacity
+P112	founder
+P551	residence
+P452	industry
+P613	os grid reference
+P1080	from fictional universe
+P53	noble family
+P915	filming location
+P1240	danish bibliometric research indicator level
+P190	sister city
+P1442	image of grave
+P1036	dewey decimal classification
+P1411	nominated for
+P1441	present in work
+P582	end time
+P239	icao airport code
+P6	head of government
+P1040	film editor
+P800	notable work
+P1454	legal form
+P1705	native label
+P1269	facet of
+P404	game mode
+P580	start time
+P1464	category for people born here
+P178	developer
+P233	canonical smiles
+P1943	location map
+P793	significant event
+P366	use
+P462	color
+P395	licence plate code
+P154	logo image
+P460	said to be the same as
+P1618	sport number
+P740	location of formation
+P2437	number of seasons
+P1477	birth name
+P1619	date of official opening
+P750	distributor
+P706	located on terrain feature
+P59	constellation
+P84	architect
+P135	movement
+P81	connecting line
+P840	narrative location
+P2049	width
+P9	sister
+P400	platform
+P197	adjacent station
+P512	academic degree
+P274	chemical formula
+P1001	applies to territorial jurisdiction
+P149	architectural style
+P41	flag image
+P126	maintained by
+P449	original network
+P410	military rank
+P576	dissolved or abolished
+P172	ethnic group
+P1853	blood type
+P25	mother
+P509	cause of death
+P528	catalog code
+P1376	capital of
+P16	highway system
+P176	manufacturer
+P241	military branch
+P272	production company
+P684	ortholog
+P1303	instrument
+P1113	number of episodes
+P180	depicts
+P127	owned by
+P403	mouth of the watercourse
+P2047	duration
+P1889	different from
+P36	capital
+P1077	koatuu identifier
+P1196	manner of death
+P30	continent
+P137	operator
+P344	director of photography
+P179	series
+P65	site of astronomical discovery
+P1588	desa code of indonesia
+P162	producer
+P140	religion
+P7	brother
+P669	located on street
+P490	provisional designation
+P1559	name in native language
+P123	publisher
+P1843	taxon common name
+P103	native language
+P2067	mass
+P859	sponsor
+P2043	length
+P473	local dialing code
+P585	point in time
+P575	time of discovery
+P119	place of burial
+P61	discoverer or inventor
+P150	contains administrative territorial entity
+P593	homologene id
+P26	spouse
+P2046	area
+P58	screenwriter
+P40	child
+P138	named after
+P186	material used
+P1057	chromosome
+P2048	height
+P86	composer
+P607	conflict
+P421	located in time zone
+P94	coat of arms image
+P141	iucn conservation status
+P937	work location
+P971	category combines topics
+P22	father
+P196	minor planet group
+P159	headquarters location
+P47	shares border with
+P264	record label
+P681	cell component
+P1343	described by source
+P242	locator map image
+P2860	cites
+P108	employer
+P1814	name in kana
+P921	main subject
+P463	member of
+P1344	participant of
+P161	cast member
+P682	biological process
+P680	molecular function
+P2888	exact match
+P175	performer
+P57	director
+P1082	population
+P217	inventory number
+P360	is a list of
+P195	collection
+P170	creator
+P433	issue
+P102	member of political party
+P413	position played on team / speciality
+P50	author
+P304	page(s)
+P478	volume
+P527	has part
+P734	family name
+P361	part of
+P166	award received
+P407	language of work or name
+P39	position held
+P156	followed by
+P2093	author name string
+P155	follows
+P54	member of sports team
+P136	genre
+P969	located at street address
+P2044	elevation above sea level
+P69	educated at
+P1412	languages spoken, written or signed
+P276	location
+P571	inception
+P301	category's main topic
+P20	place of death
+P281	postal code
+P1433	published in
+P495	country of origin
+P641	sport
+P1476	title
+P577	publication date
+P364	original language of work
+P1435	heritage status
+P703	found in taxon
+P279	subclass of
+P19	place of birth
+P570	date of death
+P27	country of citizenship
+P106	occupation
+P171	parent taxon
+P105	taxon rank
+P225	taxon name
+P735	given name
+P569	date of birth
+P625	coordinate location
+P21	sex or gender
+P131	located in the administrative territorial entity
+P17	country
+P31	instance of
+P747	edition(s)
