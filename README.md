@@ -18,7 +18,12 @@ For data import, run `python preprocess.py`. Note about some global config in it
 
 For web display, we use [flask](https://github.com/pallets/flask) for backend logic, [react-js](https://github.com/facebook/react) and [materialize](https://github.com/Dogfalo/materialize) for front display: 
 
-
+Run the web app:
+```bash
+cd web/
+python run.py
+```
+Remember to set up the sql connection in `web/app/src/query_api.py`
 
 ## Architecture
 
@@ -34,21 +39,18 @@ For web display, we use [flask](https://github.com/pallets/flask) for backend lo
 
 ## TODO
 
-- [ ] Loading event.
+
+- [x] Loading event.
 - [ ] NLQ: several small queries
 - [ ] Qualifier in query
-- [ ] Website build for listen 
-- [ ] Second form is shorter! 
-- [ ] No update when: submit first form, un-select first entity.
 
+- [ ] Website build for listen 
 - [ ] Tree: Some "instance of" not included! Type "Fantasy" (依然范特西) Many entities fail to find any tree entity...
-- [ ] Co-occurred: Sort in eid order! + another field "as" [subject/object].
+- [ ] Co-occurred: Sort in eid order!
 - [ ] Statements: Sort them in Property order!
 - [ ] NLQ: Find_claim_value(eid, pid) is needed!
+- [ ] Add "#properties" in table "entity" for choosing from name.
 
 ## Note
 
 Wikidata can be retrieved [here](http://adapt.seiee.sjtu.edu.cn/~frank/wikidata-latest-all.json.bz2), which is approx 4.5G in compressed form, 80G when extracted.
-
-
-Currently at 2450000

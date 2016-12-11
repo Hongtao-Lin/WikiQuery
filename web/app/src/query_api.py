@@ -38,6 +38,7 @@ def get_valid_properties(fname):
     return prop_dict
 
 init_mysql()
+
 DIR = os.path.dirname(os.path.realpath(__file__))
 prop_dict = get_valid_properties(DIR + "/properties.txt")
 

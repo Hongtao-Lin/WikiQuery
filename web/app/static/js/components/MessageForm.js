@@ -25,7 +25,7 @@ var MessageForm = React.createClass({
 		          <label htmlFor="entity">English charcaters only</label>
 		        </div>
 		      </div>
-		      <input type="submit" value="Submit" className="waves-effect waves-light btn" />
+		      <input type="submit" value="Search" className="waves-effect waves-light btn" />
 		    </form>
 		  </div>
 		)
