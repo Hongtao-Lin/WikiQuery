@@ -6,9 +6,6 @@ from flask import render_template, request, jsonify
 from datetime import datetime
 import requests
 from src.query_api import *
-# from src.NumberSequenceClassifier import number_clf
-# import src.crf as CRF
-# import src.rule as rule
 import json
 
 # Helper func:
