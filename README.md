@@ -39,6 +39,7 @@ Remember to set up the sql connection in `web/app/src/query_api.py`
 
 ## TODO
 
+
 - [x] Loading event.
 - [ ] NLQ: several small queries
 - [ ] Qualifier in query
@@ -49,9 +50,7 @@ Remember to set up the sql connection in `web/app/src/query_api.py`
 - [ ] Statements: Sort them in Property order!
 - [ ] NLQ: Find_claim_value(eid, pid) is needed!
 - [ ] Add "#properties" in table "entity" for choosing from name.
+
 ## Note
 
 Wikidata can be retrieved [here](http://adapt.seiee.sjtu.edu.cn/~frank/wikidata-latest-all.json.bz2), which is approx 4.5G in compressed form, 80G when extracted.
-
-
-Currently at 2450000
